@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mood-Based Music Recommender</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="animated-bg">
+    <div class="bubble"></div>
+    <div class="bubble bubble2"></div>
+    <div class="bubble bubble3"></div>
+    <div class="note">&#9835;</div>
+    <div class="note note2">&#9833;</div>
+    <div class="note note3">&#9839;</div>
+  </div>
+
+  <div class="container">
+    <h1>🎵 Mood-Based Music Recommender</h1>
+    <form id="music-form">
+      <label for="mood">Select your Mood:</label>
+      <select id="mood" name="mood">
+        <option value="happy">Happy</option>
+        <option value="sad">Sad</option>
+        <option value="relaxed">Relaxed</option>
+        <option value="energetic">Energetic</option>
+      </select>
+
+      <label for="language">Select Language:</label>
+      <select id="language" name="language">
+        <option value="english">English</option>
+        <option value="hindi">Hindi</option>
+        <option value="kannada">Kannada</option>
+        <option value="telugu">Telugu</option>
+        <option value="tamil">Tamil</option>
+        <option value="malayalam">Malayalam</option>
+      </select>
+
+      <button type="submit">Get Song Recommendation</button>
+    </form>
+
+    <div id="result" class="result-box" hidden>
+      <h2>🎶 Song Recommendation 🎶</h2>
+      <p id="quote"></p>
+      <p id="song"></p>
+      <a id="song-link" href="#" target="_blank">▶️ Listen Now</a>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("music-form");
+    const resultBox = document.getElementById("result");
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const mood = document.getElementById("mood").value;
+      const language = document.getElementById("language").value;
+
+      try {
+        const res = await fetch('/get_song', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mood, language })
+        });
+        const data = await res.json();
+
+        document.getElementById("quote").innerText = data.quote;
+        document.getElementById("song").innerText = data.song;
+        document.getElementById("song-link").href = data.link;
+
+        resultBox.hidden = false;
+      } catch (err) {
+        console.error("Error fetching recommendation:", err);
+      }
+    });
+  </script>
+</body>
+</html>
